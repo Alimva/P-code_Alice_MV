@@ -13,36 +13,7 @@ typedef struct
     int a;
 }instruction;
 
-instruction code[] = {
-    {lit,0,1000},//cria a variável de controle
-    {lit,0,1},//cria o contador
-    {lit,0,1},//cria o valor atual da soma
-    {sto,0,7},//armazena os valores
-    {sto,0,5},
-    {sto,0,8},
-    {inte,0,3},
-    {opr,0,2},//incrementa o contador
-    {sto,0,6},
-    {inte,0,-1},
-                //inicio do loop
-    {lod,0,8},//carrega as variáveis
-    {lod,0,6},
-    {lod,0,6},
-    {opr,0,4},//contador ao quadrado
-    {lod,0,6},
-    {opr,0,4},//contador ao cubo
-    {lod,0,5},
-    {opr,0,2},//incrementa a soma
-    {sto,0,5},//armazena o valor da soma
-    {lod,0,6},//carrega o contador
-    {opr,0,7},//verifica se ele é igual a variável de controle
-    {inte,0,1},
-    {lod,0,7},
-    {opr,0,2},//incrementa o contador
-    {sto,0,6},
-    {jpc,0,10},//verifica se a condição foi satisfeita
-    {jmp,0,0}//fim do programa
-};
+instruction code[] = {{jmp,0,0}};
 
 void interpret(void);
 int base(int n, int b,long int s[]);
@@ -72,8 +43,6 @@ void interpret(void){
     s[1] = 0;
     s[2] = 0;
     s[3] = 0;
-    s[4] = 0;
-    s[5] = 0;
 
     do{
         i = code[p];

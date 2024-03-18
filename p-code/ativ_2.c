@@ -14,36 +14,36 @@ typedef struct
 }instruction;
 
 instruction code[] = {
-    {lit,0,10},
-    {lit,0,1},
-    {lit,0,1},
-    {sto,0,10},
+    {lit,0,100},//cria a variável de controle
+    {lit,0,1},//cria o contador
+    {lit,0,1},//cria o valor atual da soma
+    {sto,0,7},//armazena o valor das variáveis
+    {sto,0,5},
     {sto,0,8},
-    {sto,0,11},
     {inte,0,3},
-    {opr,0,2},
-    {sto,0,9},
+    {opr,0,2},//incrementa o contador
+    {sto,0,6},//salva a variável
     {inte,0,-1},
-    
-    {lod,0,11},
-    {lod,0,9},
-    {lod,0,9},
-    {opr,0,4},
-    {lod,0,8},
-    {opr,0,2},
-    {sto,0,8},
-    {lod,0,9},
-    {opr,0,7},
+              //inicio do loop
+    {lod,0,8},//carrega as variáveis
+    {lod,0,6},
+    {lod,0,6},
+    {opr,0,4},//gera contador ao quadrado
+    {lod,0,5},
+    {opr,0,2},//incrementa a soma
+    {sto,0,5},//armazena o valor da soma
+    {lod,0,6},//carrega o contador
+    {opr,0,7},//verifica se é igual a variável de controle
     {inte,0,1},
-    {lod,0,10},
-    {opr,0,2},
-    {sto,0,9},
-    {jpc,0,10},
-    {cal,0,0}
+    {lod,0,7},
+    {opr,0,2},//incrementa contador
+    {sto,0,6},
+    {jpc,0,10},//verifica se a condição foi aceita
+    {jmp,0,0}
 };
 
 void interpret(void);
-int base(int n, int b,int s[]);
+int base(int n, int b,long int s[]);
 void include_code(fct f, int l, int a, instruction code[],int n);
 
 int main(void){
@@ -61,7 +61,7 @@ void interpret(void){
     int stacksize = 500;
     int p, b, t; //programa, base, topo da pilha
     instruction i;
-    int s[stacksize];
+    long int s[stacksize];
 
     printf("Start\n");
     p = 0;
@@ -70,6 +70,8 @@ void interpret(void){
     s[1] = 0;
     s[2] = 0;
     s[3] = 0;
+    s[4] = 0;
+    s[5] = 0;
 
     do{
         i = code[p];
@@ -78,12 +80,12 @@ void interpret(void){
         switch (i.f)
         {
         case lit:
-            printf("Instrucao = lit\n");
+            printf("Instrucao = lit %i %i\n",i.l,i.a);
             t++;
             s[t] = i.a;
             break;
         case opr:
-            printf("Instrucao = opr\n");
+            printf("Instrucao = opr %i %i\n",i.l,i.a);
             switch (i.a)
             {
             case 0:
@@ -171,18 +173,17 @@ void interpret(void){
             }
             break;
         case lod:
-            printf("Instrucao = lod\n");
+            printf("Instrucao = lod %i %i\n",i.l,i.a);
             t++;
             s[t] = s[base(i.l,b,s) + i.a];
             break;
         case sto:
-            printf("Instrucao = sto\n");
+            printf("Instrucao = sto %i %i\n",i.l,i.a);
             s[base(i.l,b,s) + i.a] = s[t];
-            printf("s = %i\n",s[t]);
             t--;
             break;
         case cal:
-            printf("Instrucao = cal\n");
+            printf("Instrucao = cal %i %i\n",i.l,i.a);
             t+= i.a;
             s[t+1] = base(i.l,b,s);
             s[t+2] = b;
@@ -191,15 +192,15 @@ void interpret(void){
             p = i.a;
             break;
         case inte:
-            printf("Instrucao = int\n");
+            printf("Instrucao = int %i %i\n",i.l,i.a);
             t += i.a;
             break;
         case jmp:
-            printf("Instrucao = jmp\n");
+            printf("Instrucao = jmp %i %i\n",i.l,i.a);
             p = i.a;
             break;
         case jpc:
-            printf("Instrucao = jpc\n");
+            printf("Instrucao = jpc %i %i\n",i.l,i.a);
             if(s[t] == 0){
                 p = i.a;
                 t--;
@@ -209,15 +210,16 @@ void interpret(void){
             break;
         }
         printf("P = %i   B = %i   T = %i\n",p,b,t);
-        printf("Pilha\n");
-        for(int i = 0;i < 13; i++){
-            printf("%i\n",s[i]);
+        printf("Pilha:");
+        for(int i = 1;i < 10; i++){
+            printf(" %li //",s[i]);
         }
+        printf("\n");
     }while(p != 0);
     printf("\nEnd pl\n");
 }
 
-int base(int l, int b,int s[]){
+int base(int l, int b,long int s[]){
     int b1 = b;
 
     while(l > 0){
