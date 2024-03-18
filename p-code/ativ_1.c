@@ -67,7 +67,7 @@ void interpret(void){
 
     printf("Start\n");
     printf("p | (i.f i.l i.a) | (p b t) | s[0] s[1] s[2] s[3] s[4] s[5] s[6] s[7]\n");
-    printf("-------------------------------------------------------------------------\n");
+    printf("-------------------------------------------------------------------------\n\n");
     
     s[1] = 0;
     s[2] = 0;
@@ -213,12 +213,15 @@ void interpret(void){
             break;
         }
         printf("(%i %i %i) |  ",p,b,t);
-        for(int i = 0;i < 9; i++){
+        for(int i = 0;i < 10; i++){
             printf(" %li ",s[i]);
         }
         printf("\n");
     }while(p != 0);
-    printf("\nEnd pl\n");
+    
+    printf("\n-------------------------------------------------------------------------\n");
+    printf("p | (i.f i.l i.a) | (p b t) | s[0] s[1] s[2] s[3] s[4] s[5] s[6] s[7]\n");
+    printf("End pl\n");
 }
 
 int base(int l, long int s[]){
