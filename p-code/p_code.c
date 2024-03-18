@@ -4,7 +4,7 @@
 #define levmax 3 //Profundidade máxima
 #define cxmax 200 //Tamanho do array code
 
-typedef enum { lit, opr, lod, sto, cal, inte, jmp, jpc } fct;
+typedef enum { LIT, OPR, LOD, STO, CAL, INT, JMP, JPC} fct;
 
 typedef struct 
 {
@@ -13,10 +13,16 @@ typedef struct
     int a;
 }instruction;
 
-instruction code[] = {{jmp,0,0}};
+int stacksize = 500;
+int p, b, t; //programa, base, topo da pilha
+p = 0;
+b = 0;
+t = 0;
+
+instruction code[] = {{JMP,0,0}};
 
 void interpret(void);
-int base(int n, int b,long int s[]);
+int base(int n, long int s[]);
 void include_code(fct f, int l, int a, instruction code[],int n);
 
 int main(void){
@@ -31,32 +37,33 @@ void include_code(fct f, int l, int a, instruction code[], int n){
 }
 
 void interpret(void){
-    int stacksize = 500;
-    int p, b, t; //programa, base, topo da pilha
-    instruction i;
     long int s[stacksize];
+    instruction i;
 
     printf("Start\n");
-    p = 0;
-    b = 1;
-    t = 0;
+    printf("p | (i.f i.l i.a) | (p b t) | s[0] s[1] s[2] s[3] s[4] s[5] s[6] s[7]\n");
+    printf("-------------------------------------------------------------------------\n");
+    
     s[1] = 0;
     s[2] = 0;
     s[3] = 0;
+    s[4] = 0;
+    s[5] = 0;
 
     do{
+        printf("%i | ",p);
         i = code[p];
         p++;
 
         switch (i.f)
         {
-        case lit:
-            printf("Instrucao = lit %i %i\n",i.l,i.a);
+        case LIT:
+            printf("(LIT %i %i) | ",i.l,i.a);
             t++;
             s[t] = i.a;
             break;
-        case opr:
-            printf("Instrucao = opr %i %i\n",i.l,i.a);
+        case OPR:
+            printf("(OPR %i %i) | ",i.l,i.a);
             switch (i.a)
             {
             case 0:
@@ -143,35 +150,35 @@ void interpret(void){
                 break;
             }
             break;
-        case lod:
-            printf("Instrucao = lod %i %i\n",i.l,i.a);
+        case LOD:
+            printf("(LOD %i %i) | ",i.l,i.a);
             t++;
-            s[t] = s[base(i.l,b,s) + i.a];
+            s[t] = s[base(i.l,s) + i.a];
             break;
-        case sto:
-            printf("Instrucao = sto %i %i\n",i.l,i.a);
-            s[base(i.l,b,s) + i.a] = s[t];
+        case STO:
+            printf("(STO %i %i) | ",i.l,i.a);
+            s[base(i.l,s) + i.a] = s[t];
             t--;
             break;
-        case cal:
-            printf("Instrucao = cal %i %i\n",i.l,i.a);
+        case CAL:
+            printf("(CAL %i %i) | ",i.l,i.a);
             t+= i.a;
-            s[t+1] = base(i.l,b,s);
+            s[t+1] = base(i.l,s);
             s[t+2] = b;
             s[t+3] = p;
             b = t+1;
             p = i.a;
             break;
-        case inte:
-            printf("Instrucao = int %i %i\n",i.l,i.a);
+        case INT:
+            printf("(INT %i %i) | ",i.l,i.a);
             t += i.a;
             break;
-        case jmp:
-            printf("Instrucao = jmp %i %i\n",i.l,i.a);
+        case JMP:
+            printf("(JMP %i %i) | ",i.l,i.a);
             p = i.a;
             break;
-        case jpc:
-            printf("Instrucao = jpc %i %i\n",i.l,i.a);
+        case JPC:
+            printf("(JPC %i %i) | ",i.l,i.a);
             if(s[t] == 0){
                 p = i.a;
                 t--;
@@ -180,17 +187,16 @@ void interpret(void){
         default:
             break;
         }
-        printf("P = %i   B = %i   T = %i\n",p,b,t);
-        printf("Pilha:");
-        for(int i = 1;i < 10; i++){
-            printf(" %li //",s[i]);
+        printf("(%i %i %i) |  ",p,b,t);
+        for(int i = 0;i < 10; i++){
+            printf(" %li ",s[i]);
         }
         printf("\n");
     }while(p != 0);
     printf("\nEnd pl\n");
 }
 
-int base(int l, int b,long int s[]){
+int base(int l, long int s[]){
     int b1 = b;
 
     while(l > 0){
